@@ -1,0 +1,170 @@
+{% extends "partitials/base.html" %}
+
+{% block title %}Cadastro{% endblock title %}
+
+{% block content %}
+
+	<div class="container">
+		<div class="row justify-content-center align-items-center" style="height:100vh;">
+		<div class="col-4">
+			<div class="card">
+			<div class="card-body">
+				<h3 class="card-title text-center">Cadastro</h3>
+				<form id="registerForm">
+				<div class="mb-3">
+					<label for="inputFullName" class="form-label">Nome</label>
+					<input type="text" class="form-control" id="inputFullName" name="full_name">
+				</div>
+				<div class="mb-3">
+					<label for="inputEmail" class="form-label">Email</label>
+					<input type="email" class="form-control" id="inputEmail" name="email">
+				</div>
+				<div class="mb-3">
+					<label for="inputPassword" class="form-label">Senha</label>
+					<div class="input-group">
+					<input type="password" class="form-control" id="inputPassword" name="password">
+					<button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('inputPassword')">
+						<i class="bi bi-eye" id="togglePasswordIcon"></i>
+					</button>
+					</div>
+				</div>
+				<div class="mb-3">
+					<label for="inputConfirmPassword" class="form-label">Confirme a Senha</label>
+					<div class="input-group">
+					<input type="password" class="form-control" id="inputConfirmPassword" name="confirmPassword">
+					<button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('inputConfirmPassword')">
+						<i class="bi bi-eye" id="toggleConfirmPasswordIcon"></i>
+					</button>
+					</div>
+				</div>
+				<div class="d-grid gap-2">
+					<button type="submit" class="btn btn-primary">Registrar</button>
+				</div>
+				</form>
+				<div class="text-center mt-4">
+					<a href="{% url "login" %}">Já tem uma conta? Faça Login</a>
+				  </div>
+			</div>
+			</div>
+		</div>
+		</div>
+	</div>
+
+	<!-- Bootstrap Bundle with Popper -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+		function togglePasswordVisibility(inputId) {
+		var input = document.getElementById(inputId);
+		if (input.type === "password") {
+			input.type = "text";
+		} else {
+			input.type = "password";
+		}
+		}
+
+		document.getElementById('registerForm').addEventListener('submit', function(event) {
+		event.preventDefault();
+		document.getElementById('loader').style.display = 'block';
+
+		const full_name = document.getElementById('inputFullName').value;
+		const email = document.getElementById('inputEmail').value;
+		const password = document.getElementById('inputPassword').value;
+		const confirmPassword = document.getElementById('inputConfirmPassword').value;
+
+		fetch('{% url "cadastro" %}', {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				full_name: full_name,
+				email: email,
+				password: password,
+				confirmPassword: confirmPassword,
+			}),
+		})
+		.then(response => response.json())
+		.then(data => {
+			document.getElementById('loader').style.display = 'none';
+
+			console.log('Success:', data);
+
+			// registrado
+			if (data['success']){
+			Swal.fire({
+				title: 'Cadastrado',
+				text: data['success'],
+				icon: 'success',
+				showConfirmButton: false,
+				timerProgressBar: true,
+				toast: true,
+				position: 'top-end',
+				timer: 1500,
+				didOpen: (toast) => {
+					toast.addEventListener('mouseenter', Swal.stopTimer)
+					toast.addEventListener('mouseleave', Swal.resumeTimer)
+				}
+			})
+
+          	// faça o redirect para a pagina
+
+
+			}else{
+			Swal.fire({
+				title: 'Ops',
+				text: data['error'],
+				icon: 'error',
+				showConfirmButton: false,
+				timerProgressBar: true,
+				toast: true,
+				position: 'top-end',
+				timer: 1500,
+				didOpen: (toast) => {
+					toast.addEventListener('mouseenter', Swal.stopTimer)
+					toast.addEventListener('mouseleave', Swal.resumeTimer)
+				}
+			})
+			}
+
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+			document.getElementById('loader').style.display = 'none';
+
+			Swal.fire({
+			title: 'Erro',
+			text: 'Ocorreu um erro ao efetuar o cadastro',
+			icon: 'warning',
+			showConfirmButton: false,
+			timerProgressBar: true,
+			toast: true,
+			position: 'top-end',
+			timer: 1500,
+			didOpen: (toast) => {
+				toast.addEventListener('mouseenter', Swal.stopTimer)
+				toast.addEventListener('mouseleave', Swal.resumeTimer)
+				}
+			})
+		});
+		});
+
+		function togglePasswordVisibility(inputId) {
+			var input = document.getElementById(inputId);
+			var icon = inputId === 'inputPassword' ? document.getElementById('togglePasswordIcon') : document.getElementById('toggleConfirmPasswordIcon');
+			if (input.type === "password") {
+			  input.type = "text";
+			  icon.classList.remove('bi-eye');
+			  icon.classList.add('bi-eye-slash');
+			} else {
+			  input.type = "password";
+			  icon.classList.remove('bi-eye-slash');
+			  icon.classList.add('bi-eye');
+			}
+		  }
+
+
+	</script>
+
+
+{% endblock content %}

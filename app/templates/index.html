@@ -1,0 +1,35 @@
+{% extends "partitials/base.html" %}
+
+{% block title %}Index{% endblock title %}
+
+{% block content %}
+
+
+    <div class="container mt-5">
+      <div class="row">
+      <div class="col-12">
+
+
+      </div>
+      </div>
+      <!-- Outras seções do painel do usuário podem ser adicionadas aqui -->
+    </div>
+
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col text-center">
+          <h1>Bem-vindo ao MeuSite {{request.user}}</h1>
+          {% if request.user.is_authenticated %}
+
+            <p>Este é o seu painel, onde você pode gerenciar suas informações, configurações e muito mais.</p>
+          {% else %}
+            <p>Seu ponto de partida para uma grande experiência.</p>
+            <a href="{% url "cadastro" %}" class="btn btn-primary">Cadastre-se</a>
+            <a href="{% url "login" %}" class="btn btn-secondary">Login</a>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+{% endblock content %}
